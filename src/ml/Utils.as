@@ -16,6 +16,7 @@
 			}
 			return null;
 		}
+
 		public static function getFontByName(fontName:String):Font	{
 			for each(var font:Font in Font.enumerateFonts()){
 				if (fontName == font.fontName) {
@@ -32,9 +33,8 @@
 		}
 			
 		public static function centerInside(inner:DisplayObject, outer:DisplayObject, width:Boolean = true, height:Boolean = true):void {
-			var outerContainer:DisplayObjectContainer = DisplayObjectContainer(outer);
-			if (outerContainer) {
-				if (outerContainer.contains(inner)) {
+			if (outer is DisplayObjectContainer) {
+				if (DisplayObjectContainer(outer).contains(inner)) {
 					throw new Error('error: ' + outer + ' contains ' + inner);
 					return false;
 				}
