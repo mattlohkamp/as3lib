@@ -37,7 +37,7 @@
     </source-path>
   </compiler>
   <file-specs>
-    <path-element>F:\work\projects\as3lib\src\ml\Main.as</path-element>
+    <path-element>F:\work\projects\as3lib\src\Main.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>

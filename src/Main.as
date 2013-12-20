@@ -1,11 +1,11 @@
-package ml	{
+package 	{
 	
 	import flash.display.Sprite;
 	import flash.text.Font;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import ml.Fonts;
+	import ml.Utils;
 	
 	/**
 	 * ...
