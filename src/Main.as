@@ -27,14 +27,14 @@ package 	{
 				cover.graphics.drawEllipse(0, 0, 50, 50);
 			addChild(cover);
 			
-			var Swiss721RoundedBoldBT:Font = Utils.getFontByName('News Cycle Medium');
+			var Swiss721RoundedBoldBT:Font = Utils.getFontByName('Swiss 721 Bold Rounded BT');
 			
 			var tf:TextField = new TextField();
 			addChild(tf);
 			tf.embedFonts = true;
 			tf.autoSize = TextFieldAutoSize.LEFT;
 				var format:TextFormat = tf.getTextFormat();
-				format.font = NewsCycleMedium.fontName;
+				format.font = Swiss721RoundedBoldBT.fontName;
 				format.color = 0x112233;
 				format.size = 36;
 			tf.defaultTextFormat = format;
