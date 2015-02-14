@@ -11,7 +11,16 @@
 		
 			//	data
 		
-		public static function objectMerge(base:Object, mod:Object):Object	{			
+		public static function mergeXMLNode(base:XML, mod:XML):XML	{	//	merge attriutes and values of two xml nodes - mod will overwrite base, returns *new* xml
+			var result:XML = new XML(base);
+			var attributes:XMLList = mod.attributes();	//	mod attributes
+			for(var i:String in attributes){	result.@[attributes[i].name()] = attributes[i].toString();	}	//	overwrite node attributes
+			var modFirstChild:XML = mod.children()[0];
+			if(modFirstChild != XML(undefined)){	result.replace(0,modFirstChild);	}	//	overwrite node content
+			return result;
+		}
+		
+		public static function objectMerge(base:Object, mod:Object):Object	{	//	mod properties will overwrite base, returns *new* object
 			var result:Object = new Object();
 			var prop:String = new String();
 			for(prop in base){	result[prop] = base[prop];	}
@@ -19,7 +28,7 @@
 			return result;
 		}
 		
-		public static function vectorToArray(vector:*):Array	{	//	opposite:	Vector.<T>([a,b,c]);
+		public static function vectorToArray(vector:*):Array	{	//	opposite:	Vector.<Class>([a,b,c]);
 			var array:Array = new Array();
 			for (var i:int = 0; i < vector.length; ++i)	{	array[i] = vector[i];	}
 			return array;
