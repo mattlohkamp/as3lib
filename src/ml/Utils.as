@@ -15,8 +15,8 @@
 			var result:XML = new XML(base);
 			var attributes:XMLList = mod.attributes();	//	mod attributes
 			for(var i:String in attributes){	result.@[attributes[i].name()] = attributes[i].toString();	}	//	overwrite node attributes
-			var modFirstChild:XML = mod.children()[0];
-			if(modFirstChild != XML(undefined)){	result.replace(0,modFirstChild);	}	//	overwrite node content
+			var modChildren:XMLList = mod.children();
+			if(modChildren.length()){	result.setChildren(modChildren);	}	//	overwrite node content
 			return result;
 		}
 		
