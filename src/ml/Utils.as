@@ -81,7 +81,7 @@
 			if (width)	target.x = area.x + ((area.width - target.width) / 2);
 			if (height)	target.y = area.y + ((area.height - target.height) / 2);
 		}
-		public static function scaleToFit(inner:DisplayObject, outer:DisplayObject, letterBox:Boolean = true):Number	{
+		public static function scaleToFit(inner:DisplayObject, outer:*, letterBox:Boolean = true):Number	{
 			var wRatio:Number = outer.width / inner.width;
 			var hRatio:Number = outer.height / inner.height;
 			var scale:Number = (wRatio < hRatio) ? wRatio : hRatio;
