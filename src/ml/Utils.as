@@ -11,12 +11,14 @@
 		
 			//	data
 		
-		public static function mergeXMLNode(base:XML, mod:XML):XML	{	//	merge attriutes and values of two xml nodes - mod will overwrite base, returns *new* xml
+		public static function mergeXMLNode(base:XML, mod:XML, useModChildren:Boolean = true):XML	{	//	merge attriutes and values of two xml nodes - mod will overwrite base, returns *new* xml
 			var result:XML = new XML(base);
 			var attributes:XMLList = mod.attributes();	//	mod attributes
 			for(var i:String in attributes){	result.@[attributes[i].name()] = attributes[i].toString();	}	//	overwrite node attributes
-			var modChildren:XMLList = mod.children();
-			if(modChildren.length()){	result.setChildren(modChildren);	}	//	overwrite node content
+			if(useModChildren){
+				var modChildren:XMLList = mod.children();
+				if(modChildren.length()){	result.setChildren(modChildren);	}	//	overwrite node content
+			}
 			return result;
 		}
 		
@@ -32,6 +34,18 @@
 			var array:Array = new Array();
 			for (var i:int = 0; i < vector.length; ++i)	{	array[i] = vector[i];	}
 			return array;
+		}
+		
+		public static function count(target:Object):uint	{	//	mostly for counting the number of values of an associative array
+			var len:uint = new uint();
+			for(var prop:* in target){	len++;	}
+			return len;
+		}
+		
+		public static function arrayValues(array:Array):Array	{	//	aping PHP's associative-to-indexed array function
+			var newArray:Array = new Array();
+			for(var prop:* in array){	newArray.push(array[prop]);	}
+			return newArray;
 		}
 		
 			//	typography
