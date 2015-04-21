@@ -6,6 +6,9 @@
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
+	import flash.utils.Dictionary;
+	import flash.net.LocalConnection;
+	import flash.system.System;
 
 	public class Utils	{
 		
@@ -42,7 +45,7 @@
 			return len;
 		}
 		
-		public static function arrayValues(array:Array):Array	{	//	aping PHP's associative-to-indexed array function
+		public static function arrayValues(array:Array):Array	{
 			var newArray:Array = new Array();
 			for(var prop:* in array){	newArray.push(array[prop]);	}
 			return newArray;
@@ -64,7 +67,7 @@
 					}
 				}
 			}
-			return null;
+			return fontList.pop();	//	fall back on the last item in the list
 		}
 		
 		public static function getFontByName(fontName:String):Font	{
@@ -102,6 +105,37 @@
 			inner.scaleX = inner.scaleY = scale;
 			if (letterBox) centerInside(inner, rectify(outer));
 			return scale;
+		}
+		
+		public static function killAllChildren(collection:*):void	{
+			var displayObject:DisplayObject;
+			if(collection is DisplayObjectContainer){
+				collection.stopAllMovieClips();
+				while(collection.numChildren)	collection.removeChild(collection.getChildAt(0));
+			}else if(collection is Vector || collection is Array){
+				while(collection.length){
+					displayObject = collection.pop();
+					if(displayObject.parent){
+						displayObject.parent.removeChild(displayObject);
+					}
+					displayObject = null;
+				}
+			}else if(collection is Object){
+				//	todo
+			}else if(collection is Dictionary){
+				//	todo
+			}
+			displayObject = null;
+		}
+		
+			//	hax
+		
+		public static function forceGC():void	{	//	best of both words (requires AIR);
+			try	{
+				new LocalConnection().connect('foo');
+				new LocalConnection().connect('foo');
+			}catch(e:*){}
+			System.gc();
 		}
 	}
 }
