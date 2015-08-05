@@ -13,6 +13,11 @@
 	public class Utils	{
 		
 			//	data
+
+		public static function roundTo(target:Number, decPlaces:uint):Number	{	//	rounding as opposed to cropping, as in: Number(target.toFixed(decPlaces))
+			var exp:Number = Math.pow(10,decPlaces);
+			return Math.round(target * exp) / exp;
+		}		
 		
 		public static function mergeXMLNode(base:XML, mod:XML, useModChildren:Boolean = true):XML	{	//	merge attriutes and values of two xml nodes - mod will overwrite base, returns *new* xml
 			var result:XML = new XML(base);
@@ -98,6 +103,7 @@
 			if (width)	target.x = area.x + ((area.width - target.width) / 2);
 			if (height)	target.y = area.y + ((area.height - target.height) / 2);
 		}
+		
 		public static function scaleToFit(inner:DisplayObject, outer:*, letterBox:Boolean = true):Number	{
 			var wRatio:Number = outer.width / inner.width;
 			var hRatio:Number = outer.height / inner.height;
