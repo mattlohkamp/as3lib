@@ -9,10 +9,23 @@
 	import flash.utils.Dictionary;
 	import flash.net.LocalConnection;
 	import flash.system.System;
+	import com.rwest.IntelPromoterPresentation.Fonts;
 
 	public class Utils	{
 		
+			//	structure
+		
+			//	props to http://stackoverflow.com/a/748753/14026
+		public static function isDynamic(target:*):Boolean	{	return describeType(target).@isDynamic.toString() == "true";	}
+		
 			//	data
+		
+		public static function stringToBool(target:String):Boolean	{
+			if(target == '0')	return false;
+			if(target.toLowerCase() == 'true')	return true;
+			if(target == '')	return false;
+			return false;
+		}
 
 		public static function roundTo(target:Number, decPlaces:uint):Number	{	//	rounding as opposed to cropping, as in: Number(target.toFixed(decPlaces))
 			var exp:Number = Math.pow(10,decPlaces);
@@ -32,10 +45,14 @@
 		
 		public static function objectMerge(base:Object, mod:Object):Object	{	//	mod properties will overwrite base, returns *new* object
 			var result:Object = new Object();
-			var prop:String = new String();
+			var prop:String;
 			for(prop in base){	result[prop] = base[prop];	}
 			for(prop in mod){	result[prop] = mod[prop];	}
 			return result;
+		}
+		
+		public static function propsTo(base:*, mod:Object):void	{	//	similar to objectMerge, but effects the actual target and respects typing
+			for(var prop:String in mod){	if(base.hasOwnProperty(prop) || isDynamic(base))	base[prop] = mod[prop];	}
 		}
 		
 		public static function vectorToArray(vector:*):Array	{	//	opposite:	Vector.<Class>([a,b,c]);
@@ -50,7 +67,7 @@
 			return len;
 		}
 		
-		public static function arrayValues(array:Array):Array	{
+		public static function arrayValues(array:Array):Array	{	//	returns the keys of an array, as an array
 			var newArray:Array = new Array();
 			for(var prop:* in array){	newArray.push(array[prop]);	}
 			return newArray;
@@ -58,13 +75,17 @@
 		
 			//	typography
 		
-		public static function tryFonts(text:String,...fontNames:Array):String	{	//	specifically to try a css-style list of font names, and return the winning name
+		public static function tryFonts(text:String,...fontNames:Array):String	{	//	specifically to try a css-style list of fonts  names, and return the winning name
 			var fonts:Vector.<Font> = new Vector.<Font>();
-			for each(var fontName:String in fontNames){	fonts.push(getFontByName(fontName));	}
-			return findFallbackFont(fonts,text).fontName;
+			for each(var fontName:String in fontNames){
+				var font:Font = getFontByName(fontName);
+				fonts.push(font);
+			}
+			var fallbackFont:Font = findFallbackFont(fonts,text);
+			return fallbackFont.fontName;
 		}
 		
-		public static function findFallbackFont(fontList:Vector.<Font>,text:String):Font	{
+		public static function findFallbackFont(fontList:Vector.<Font>,text:String):Font	{	//	an array of Font.hasGlyphs() tests
 			for each(var font:Font in fontList){
 				if(font){
 					if(font.hasGlyphs(text)){
@@ -75,22 +96,20 @@
 			return fontList.pop();	//	fall back on the last item in the list
 		}
 		
-		public static function getFontByName(fontName:String):Font	{
+		public static function getFontByName(fontName:String):Font	{	//	the opposite of Font.fontName
 			for each(var font:Font in Font.enumerateFonts()){
-				if (fontName == font.fontName) {
-					return font;
-				}
+				if (fontName == font.fontName) {	return font;	}	//	font names are case sensitive note
 			}
 			return null;
 		}
 		
 			//	position & layout
 			
-		public static function bringToTop(target:DisplayObject):void{
+		public static function bringToTop(target:DisplayObject):void{	//	position an element above its siblings
 			target.parent.setChildIndex(target,target.parent.numChildren-1);
 		}
 		
-		public static function rectify(target:*):Rectangle	{
+		public static function rectify(target:*):Rectangle	{	//	build a rectangle out of a display object
 			return new Rectangle(
 				(target.hasOwnProperty('x')) ? target.x : 0,
 				(target.hasOwnProperty('y')) ? target.y : 0,
@@ -99,18 +118,21 @@
 			);
 		}
 		
-		public static function centerInside(target:*, area:Rectangle, width:Boolean = true, height:Boolean = true):void {
+		public static function centerInside(target:*, area:Rectangle, width:Boolean = true, height:Boolean = true):void {	//	shortcut the usual half minus width equation
 			if (width)	target.x = area.x + ((area.width - target.width) / 2);
 			if (height)	target.y = area.y + ((area.height - target.height) / 2);
 		}
 		
-		public static function scaleToFit(inner:DisplayObject, outer:*, letterBox:Boolean = true):Number	{
+		public static function scaleToFit(inner:DisplayObject, outer:*, cropToFit:Boolean = false):Number	{
 			var wRatio:Number = outer.width / inner.width;
 			var hRatio:Number = outer.height / inner.height;
-			var scale:Number = (wRatio < hRatio) ? wRatio : hRatio;
-			inner.scaleX = inner.scaleY = scale;
-			if (letterBox) centerInside(inner, rectify(outer));
-			return scale;
+			if(cropToFit){
+				inner.scaleX = inner.scaleY = (wRatio < hRatio) ? wRatio : hRatio;
+			}else{
+				inner.scaleX = inner.scaleY = (wRatio > hRatio) ? wRatio : hRatio;
+			}
+			centerInside(inner, rectify(outer));
+			return inner.scaleX;
 		}
 		
 		public static function killAllChildren(collection:*):void	{
