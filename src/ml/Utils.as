@@ -9,7 +9,7 @@
 	import flash.utils.Dictionary;
 	import flash.net.LocalConnection;
 	import flash.system.System;
-	import com.rwest.IntelPromoterPresentation.Fonts;
+	import flash.display.MovieClip;
 
 	public class Utils	{
 		
@@ -118,21 +118,24 @@
 			);
 		}
 		
+		public static function getCenteredOffset(innerLength:Number,outerPos:Number,outerLength:Number):Number	{	return outerPos + ((outerLength - innerLength) / 2);	}
+		
 		public static function centerInside(target:*, area:Rectangle, width:Boolean = true, height:Boolean = true):void {	//	shortcut the usual half minus width equation
-			if (width)	target.x = area.x + ((area.width - target.width) / 2);
-			if (height)	target.y = area.y + ((area.height - target.height) / 2);
+			if(width)	target.x = getCenteredOffset(target.width,area.x,area.width);
+			if(height)	target.y = getCenteredOffset(target.height,area.y,area.height);
 		}
 		
-		public static function scaleToFit(inner:DisplayObject, outer:*, cropToFit:Boolean = false):Number	{
-			var wRatio:Number = outer.width / inner.width;
-			var hRatio:Number = outer.height / inner.height;
-			if(cropToFit){
-				inner.scaleX = inner.scaleY = (wRatio < hRatio) ? wRatio : hRatio;
-			}else{
-				inner.scaleX = inner.scaleY = (wRatio > hRatio) ? wRatio : hRatio;
-			}
-			centerInside(inner, rectify(outer));
-			return inner.scaleX;
+			//	returns a scale value to be applied to scaleX and scaleY, such that the object fits as defined by cropToFit
+		public static function get2DScaleRatio(innerWidth:Number, innerHeight:Number, outerWidth:Number, outerHeight:Number, letterbox:Boolean = false):Number	{
+			var wRatio:Number = outerWidth / innerWidth;
+			var hRatio:Number = outerHeight / innerHeight;
+			return (letterbox) ? ((wRatio < hRatio) ? wRatio : hRatio) : ((wRatio > hRatio) ? wRatio : hRatio);
+		}
+		
+		public static function scaleToFit(inner:DisplayObject, outer:*, letterbox:Boolean = false, centerInnerInOuter:Boolean = true):Number	{
+			inner.scaleX = inner.scaleY = get2DScaleRatio(inner.width,inner.height,outer.width,outer.height,letterbox);
+			if(centerInnerInOuter)	centerInside(inner, rectify(outer));
+			return inner.scaleX;	//	convenience, so we don't have to save the return of 
 		}
 		
 		public static function killAllChildren(collection:*):void	{
@@ -143,27 +146,28 @@
 			}else if(collection is Vector || collection is Array){
 				while(collection.length){
 					displayObject = collection.pop();
-					if(displayObject.parent){
-						displayObject.parent.removeChild(displayObject);
-					}
-					displayObject = null;
+					if(displayObject is MovieClip)	MovieClip(displayObject).stop();
+					if(displayObject.parent)	displayObject.parent.removeChild(displayObject);
 				}
 			}else if(collection is Object){
 				//	todo
 			}else if(collection is Dictionary){
 				//	todo
 			}
-			displayObject = null;
 		}
 		
-			//	hax
+			//	other
 		
-		public static function forceGC():void	{	//	best of both words (requires AIR);
-			try	{
+		public static function forceGC():void	{
+			try	{	//	hax
 				new LocalConnection().connect('foo');
 				new LocalConnection().connect('foo');
 			}catch(e:*){}
-			System.gc();
+			
+			try	{	//	requires AIR
+				System.gc();
+			}catch(e:*){}
+			
 		}
 	}
 }
