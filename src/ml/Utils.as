@@ -79,7 +79,7 @@
 			var fonts:Vector.<Font> = new Vector.<Font>();
 			for each(var fontName:String in fontNames){
 				var font:Font = getFontByName(fontName);
-				fonts.push(font);
+				if(font)	fonts.push(font);
 			}
 			var fallbackFont:Font = findFallbackFont(fonts,text);
 			return fallbackFont.fontName;
